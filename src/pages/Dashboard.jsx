@@ -87,10 +87,10 @@ function Dashboard() {
   return (
     <div>
         <Navbar/>
-        <div className="min-h-screen  p-32">
+       <div className="min-h-screen pt-24 px-4 py-6 sm:px-8 md:px-16 lg:px-32">
       <div className="max-w-full mx-auto bg-white p-6 rounded-xl shadow-md">
         
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center mb-6">
           <div className="flex justify-between mb-4 gap-4">
               <input
                 type="text"
@@ -178,7 +178,7 @@ function Dashboard() {
       
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-opacity-40">
-          <div className="bg-white w-96 p-6 rounded-xl shadow-xl">
+          <div className="bg-white w-full max-w-md mx-4 p-6 rounded-xl shadow-xl">
             <h3 className="text-xl font-semibold mb-4">
               {editId ? "Update Student" : "Create Student"}
             </h3>
