@@ -22,6 +22,12 @@ function Dashboard() {
     course: ""
   });
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCourse, setFilterCourse] = useState("All");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const studentsPerPage = 5;
+
   useEffect(() => {
     dispatch(getStudents());
   }, [dispatch]);
@@ -40,6 +46,27 @@ function Dashboard() {
     });
     setShowModal(true);
   };
+
+  const filteredStudents = students.filter((student) => {
+    const matchesSearch =
+      student.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesFilter =
+      filterCourse === "All" || student.course === filterCourse;
+
+    return matchesSearch && matchesFilter;
+  });
+
+    
+  const indexOfLastStudent = currentPage * studentsPerPage;
+  const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
+
+  const currentStudents = filteredStudents.slice(
+    indexOfFirstStudent,
+    indexOfLastStudent
+  );
+
+  const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
 
   const handleSubmit = () => {
     if (editId) {
@@ -64,7 +91,35 @@ function Dashboard() {
       <div className="max-w-full mx-auto bg-white p-6 rounded-xl shadow-md">
         
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Students List</h2>
+          <div className="flex justify-between mb-4 gap-4">
+              <input
+                type="text"
+                placeholder="Search by name..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="border border-gray-300 p-2 rounded-lg w-1/2"
+              />
+              <select
+                value={filterCourse}
+                onChange={(e) => {
+                  setFilterCourse(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="border border-gray-300 p-2 rounded-lg"
+              >
+                <option value="All">All Courses</option>
+                {[...new Set(students.map((s) => s.course))].map((course, index) => (
+                  <option key={index} value={course}>
+                    {course}
+                  </option>
+                ))}
+              </select>
+
+            </div>
+                      
           <button
             onClick={openCreateModal}
             className="bg-[#913743] text-white px-4 py-2 rounded-lg hover:bg-[#914a54] transition"
@@ -74,7 +129,7 @@ function Dashboard() {
         </div>
 
         <div className="space-y-4">
-          {students.map((student) => (
+          {currentStudents.map((student) => (
             <div
               key={student._id}
               className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-sm"
@@ -100,6 +155,22 @@ function Dashboard() {
                 </button>
               </div>
             </div>
+          ))}
+
+        </div>
+        <div className="flex justify-center mt-6 space-x-2">
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentPage(index + 1)}
+              className={`px-3 py-1 rounded-md ${
+                currentPage === index + 1
+                  ? "bg-[#913743] text-white"
+                  : "bg-gray-200"
+              }`}
+            >
+              {index + 1}
+            </button>
           ))}
         </div>
       </div>
