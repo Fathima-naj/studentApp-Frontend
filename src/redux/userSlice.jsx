@@ -16,6 +16,8 @@ export const loginUser=createAsyncThunk('/user/loginUser',
     async(formData,thunkAPI)=>{
         try {
             const res=await axiosInstance.post('/user/login',formData)
+            console.log('res.data');
+            
             return res.data;
         } catch (error) {
              return thunkAPI.rejectWithValue(error.response.data)
@@ -26,7 +28,8 @@ export const loginUser=createAsyncThunk('/user/loginUser',
 const initialState = {
   user: null,
   loading: false,
-  error: null
+  error: null,
+  role:null
 };
 
 const userSlice = createSlice({
@@ -62,6 +65,8 @@ const userSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         localStorage.setItem("token", action.payload.token);
+        // localStorage.setItem("role",action.payload.user.role)
+        state.role=action.payload.user.role;
         })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;

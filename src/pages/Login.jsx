@@ -17,7 +17,7 @@ const schema = Yup.object().shape({
 function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.user);
+  const {role, loading, error } = useSelector((state) => state.user);
 
   const {
     register,
@@ -31,8 +31,12 @@ function Login() {
     try {
       await dispatch(loginUser(data)).unwrap();
       console.log('logged In');
-      
-      navigate("/dashboard");  
+      if(role=="admin"){
+        navigate("/dashboard"); 
+      }else{
+        navigate("/studentDashboard"); 
+      }
+       
     } catch (err) {
       console.log("Login failed:", err);
     }

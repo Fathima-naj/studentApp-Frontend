@@ -83,7 +83,7 @@ function Register() {
         {loading ? "Registering..." : "Register"}
       </button>
 
-      <p lassName="text-center text-sm mt-4">
+      <p className="text-center text-sm mt-4">
         Already have an account?{" "}
         <Link to="/" 
          className="text-blue-600 hover:underline"

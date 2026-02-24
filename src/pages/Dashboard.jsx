@@ -5,18 +5,19 @@ import {
   deleteStudent,
   createStudent,
   updateStudent
-} from "../redux/studentSlice";
+} from "../redux/adminSlice";
 import Navbar from "../components/Navbar";
 
 function Dashboard() {
   const dispatch = useDispatch();
-  const { students, loading } = useSelector((state) => state.student);
+  const { students, loading } = useSelector((state) => state.admin);
 
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
+    email:"",
     course: ""
   });
 
@@ -32,7 +33,7 @@ function Dashboard() {
 
   const openCreateModal = () => {
     setEditId(null);
-    setFormData({ name: "", course: "" });
+    setFormData({ name: "", course: "",email:"" });
     setShowModal(true);
   };
 
@@ -40,7 +41,8 @@ function Dashboard() {
     setEditId(student._id);
     setFormData({
       name: student.name,
-      course: student.course
+      course: student.course,
+      email:student.email
     });
     setShowModal(true);
   };
@@ -65,14 +67,20 @@ function Dashboard() {
 
   const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
 
-  const handleSubmit = () => {
-    if (editId) {
-      dispatch(updateStudent({ id: editId, formData }));
-    } else {
-      dispatch(createStudent(formData));
-    }
-    setShowModal(false);
-  };
+  const handleSubmit = async () => {
+  if (!formData.name || !formData.email || !formData.course) {
+    alert("All fields are required");
+    return;
+  }
+
+  if (editId) {
+    await dispatch(updateStudent({ id: editId, formData }));
+  } else {
+    await dispatch(createStudent(formData));
+  }
+
+  setShowModal(false);
+};
 
   const handleDelete = (id) => {
     dispatch(deleteStudent(id));
@@ -88,10 +96,8 @@ function Dashboard() {
       <div className="pt-24 px-4 py-6 sm:px-8 md:px-16 lg:px-32">
         <div className="w-full mx-auto bg-white p-4 sm:p-6 rounded-xl shadow-md">
 
-          {/* Header Section */}
           <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center mb-6">
 
-            {/* Search & Filter */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <input
                 type="text"
@@ -129,7 +135,6 @@ function Dashboard() {
             </button>
           </div>
 
-          {/* Student List */}
           <div className="space-y-4">
             {currentStudents.map((student) => (
               <div
@@ -139,6 +144,7 @@ function Dashboard() {
                 <div>
                   <p className="font-semibold">{student.name}</p>
                   <p className="text-gray-500">{student.course}</p>
+                  <p className="text-gray-500">{student.email}</p>
                 </div>
 
                 <div className="flex gap-2">
@@ -160,7 +166,6 @@ function Dashboard() {
             ))}
           </div>
 
-          {/* Pagination */}
           <div className="flex flex-wrap justify-center mt-6 gap-2">
             {[...Array(totalPages)].map((_, index) => (
               <button
@@ -178,7 +183,6 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Modal */}
         {showModal && (
           <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30">
             <div className="bg-white w-full max-w-md mx-4 p-6 rounded-xl shadow-xl">
@@ -193,6 +197,16 @@ function Dashboard() {
                   value={formData.name}
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
+                  }
+                  className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+
+                <input
+                  type="text"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
                   }
                   className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
