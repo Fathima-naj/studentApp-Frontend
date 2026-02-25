@@ -98,7 +98,7 @@ function StudentDashboard() {
 
           <button
             onClick={() => setShowModal(true)}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 w-full"
+            className="bg-[#913743] text-white px-4 py-2 rounded-lg hover:bg-[#914a54] w-full"
           >
             Add Your Details
           </button>
