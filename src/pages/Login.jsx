@@ -2,8 +2,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { loginUser } from "../redux/userSlice";
+import { clearError, loginUser } from "../redux/userSlice";
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const schema = Yup.object().shape({
   email: Yup.string()
@@ -26,6 +27,12 @@ function Login() {
   } = useForm({
     resolver: yupResolver(schema)
   });
+
+ useEffect(() => {
+  return () => {
+    dispatch(clearError());
+  };
+}, [dispatch]);
 
 const onSubmit = async (data) => {
   try {

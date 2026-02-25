@@ -39,6 +39,9 @@ const userSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.error = null;
+    },
+    clearError: (state) => {
+      state.error = null;
     }
   },
   extraReducers: (builder) => {
@@ -75,5 +78,5 @@ const userSlice = createSlice({
   }
 });
 
-export const { logout } = userSlice.actions;
+export const { logout ,clearError} = userSlice.actions;
 export default userSlice.reducer;

@@ -10,7 +10,7 @@ import Navbar from "../components/Navbar";
 
 function Dashboard() {
   const dispatch = useDispatch();
-  const { students, loading } = useSelector((state) => state.admin);
+  const { students, loading ,error} = useSelector((state) => state.admin);
 
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -88,7 +88,21 @@ function Dashboard() {
 
   if (loading)
     return <p className="text-center mt-10 text-lg">Loading...</p>;
+  
+   {error && (
+  <div className="mb-4 p-3 rounded-lg bg-red-100 border border-red-300 text-red-700 flex items-center justify-between">
+    <span className="text-sm font-medium">
+      {typeof error === "string" ? error : error?.message}
+    </span>
 
+    <button
+      onClick={() => window.location.reload()}
+      className="text-xs bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition"
+    >
+      Retry
+    </button>
+  </div>
+)}
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar />

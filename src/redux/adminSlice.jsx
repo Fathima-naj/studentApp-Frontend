@@ -89,6 +89,7 @@ const adminSlice = createSlice({
 
       .addCase(createStudent.fulfilled, (state, action) => {
         state.students.push(action.payload);
+        state.error=action.payload|| action.error.message
       })
       .addCase(updateStudent.fulfilled, (state, action) => {
         state.students = state.students.map((student) =>
