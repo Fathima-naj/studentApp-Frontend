@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getOwnData } from "../redux/studentSlice";
 import { axiosInstance } from "../auth/axiosInstance";
-import StudentNavbar from "../components/studentNavbar";
+import StudentNavbar from "../components/StudentNavbar";
 
 function StudentDashboard() {
   const dispatch = useDispatch();
