@@ -27,21 +27,22 @@ function Login() {
     resolver: yupResolver(schema)
   });
 
-  const onSubmit = async (data) => {
-    try {
-      await dispatch(loginUser(data)).unwrap();
-      console.log('logged In');
-      if(role=="admin"){
-        navigate("/dashboard"); 
-      }else{
-        navigate("/studentDashboard"); 
-      }
-       
-    } catch (err) {
-      console.log("Login failed:", err);
-    }
-  };
+const onSubmit = async (data) => {
+  try {
+    const res = await dispatch(loginUser(data)).unwrap();
 
+    console.log("Logged In:", res);
+
+    if (res.user.role === "admin") {
+      navigate("/dashboard");
+    } else {
+      navigate("/studentDashboard");
+    }
+
+  } catch (err) {
+    console.log("Login failed:", err);
+  }
+};
   return (
   <div className="min-h-screen flex items-center justify-center ">
     <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
