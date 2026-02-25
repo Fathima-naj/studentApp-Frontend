@@ -16,15 +16,12 @@ function StudentDashboard() {
     password: "",
   });
 
-  // Fetch student data
   useEffect(() => {
     dispatch(getOwnData());
   }, [dispatch]);
 
-  // Fill form if student exists
  useEffect(() => {
   if (student) {
-    // If profile exists → fill form
     setFormData({
       name: student.name || "",
       email: student.email || "",
@@ -32,7 +29,6 @@ function StudentDashboard() {
       password: "",
     });
   } else {
-    // 🔥 If no profile → clear form
     setFormData({
       name: "",
       email: "",
@@ -42,27 +38,37 @@ function StudentDashboard() {
   }
 }, [student]);
 
-  // Handle create OR update
  const handleSubmitData = async () => {
   try {
-    const submitData = { ...formData };
+    const data = new FormData();
 
-    if (!submitData.password) {
-      delete submitData.password;
+    data.append("name", formData.name);
+    data.append("email", formData.email);
+    data.append("course", formData.course);
+
+    if (formData.password) {
+      data.append("password", formData.password);
+    }
+
+    if (formData.profileImage) {
+      data.append("profileImage", formData.profileImage);
     }
 
     const res = await axiosInstance.put(
       "/student/update",
-      submitData
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
 
-    console.log(res.data);
     setShowModal(false);
     dispatch(getOwnData());
 
   } catch (err) {
-    console.error(err.response?.data || err.message);
-    alert("Operation failed");
+    console.error(err);
   }
 };
 
@@ -74,9 +80,15 @@ function StudentDashboard() {
       <StudentNavbar />
 
       {student ? (
-        // If student profile exists
         <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-4 text-center">{student.name}</h2>
+          {student.profileImage && (
+              <img
+                src={student.profileImage}
+                alt="Profile"
+                className="w-32 h-32 rounded-full object-cover mx-auto mb-4"
+              />
+            )}
+         <h2 className="text-2xl font-bold mb-4 text-center">{student.name}</h2>
           <p className="text-gray-600 mb-2">
             <strong>Email:</strong> {student.email}
           </p>
@@ -92,7 +104,6 @@ function StudentDashboard() {
           </button>
         </div>
       ) : (
-        // If no student profile
         <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md text-center">
           <h2 className="text-xl font-semibold mb-4">No Profile Found</h2>
 
@@ -105,7 +116,6 @@ function StudentDashboard() {
         </div>
       )}
 
-      {/* Modal for Add / Update */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30">
           <div className="bg-white w-full max-w-md mx-4 p-6 rounded-xl shadow-xl">
@@ -142,6 +152,13 @@ function StudentDashboard() {
                   setFormData({ ...formData, course: e.target.value })
                 }
                 className="w-full border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+              
+              <input
+                type="file"
+                onChange={(e) =>
+                  setFormData({ ...formData, profileImage: e.target.files[0] })
+                }
               />
 
               <input
