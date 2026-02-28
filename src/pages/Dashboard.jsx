@@ -82,13 +82,15 @@ function Dashboard() {
   setShowModal(false);
 };
 
+console.log('students:',students);
+
   const handleDelete = (id) => {
     dispatch(deleteStudent(id));
   };
 
   if (loading)
     return <p className="text-center mt-10 text-lg">Loading...</p>;
-  
+
    {error && (
   <div className="mb-4 p-3 rounded-lg bg-red-100 border border-red-300 text-red-700 flex items-center justify-between">
     <span className="text-sm font-medium">

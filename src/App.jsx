@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
 import AdminRoute from './components/AdminRoute'
 import StudentDashboard from './pages/StudentDashboard'
+import AdminDashboard from './pages/adminDashboard'
 
 function App() {
 
@@ -15,7 +16,8 @@ function App() {
       <Routes>
         <Route path='/' element={<Login/>}/>
         <Route path='/register' element={<Register/>}/>
-        <Route path='/dashboard' element={<AdminRoute><Dashboard/></AdminRoute>}/>
+        <Route path='/students' element={<AdminRoute><Dashboard/></AdminRoute>}/>
+        <Route path='/adminDashboard' element={<AdminRoute><AdminDashboard/></AdminRoute>}/>
         <Route path='/studentDashboard' element={<ProtectedRoute><StudentDashboard/></ProtectedRoute>}/>
       </Routes>
     </>

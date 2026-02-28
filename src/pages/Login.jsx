@@ -41,7 +41,7 @@ const onSubmit = async (data) => {
     console.log("Logged In:", res);
 
     if (res.user.role === "admin") {
-      navigate("/dashboard");
+      navigate("/adminDashboard");
     } else {
       navigate("/studentDashboard");
     }

@@ -20,12 +20,17 @@ function Navbar() {
 
       <div className="flex items-center space-x-6">
         <Link
-          to="/dashboard"
+          to="/students"
+          className="text-gray-700 hover:text-[#913743] font-medium"
+        >
+          Students
+        </Link>
+        <Link
+          to="/adminDashboard"
           className="text-gray-700 hover:text-[#913743] font-medium"
         >
           Dashboard
         </Link>
-
         <button
           onClick={handleLogout}
           className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
