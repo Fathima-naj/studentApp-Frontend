@@ -7,7 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
 import AdminRoute from './components/AdminRoute'
 import StudentDashboard from './pages/StudentDashboard'
-import AdminDashboard from './pages/adminDashboard'
+import AdminDashboard from './pages/AdminDashboard'
 
 function App() {
 
