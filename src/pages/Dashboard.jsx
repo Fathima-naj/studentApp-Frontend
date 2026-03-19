@@ -1,119 +1,54 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  getStudents,
-  deleteStudent,
-  createStudent,
-  updateStudent
-} from "../redux/adminSlice";
+import React from "react";
 import Navbar from "../components/Navbar";
+import { useAdminStudents } from "../hooks/useAdminStudents";
+import { useAdminStudentForm } from "../hooks/useAdminStudentForm";
+import { useModal } from "../hooks/useModal";
 
 function Dashboard() {
-  const dispatch = useDispatch();
-  const { students, loading ,error} = useSelector((state) => state.admin);
+  const {
+    students,
+    loading,
+    error,
+    searchTerm,
+    setSearchTerm,
+    filterCourse,
+    setFilterCourse,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    courses,
+  } = useAdminStudents(5);
 
-  const [showModal, setShowModal] = useState(false);
-  const [editId, setEditId] = useState(null);
-
-  const [formData, setFormData] = useState({
-    name: "",
-    email:"",
-    course: ""
-  });
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterCourse, setFilterCourse] = useState("All");
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const studentsPerPage = 5;
-
-  useEffect(() => {
-    dispatch(getStudents());
-  }, [dispatch]);
+  const { isOpen, openModal, closeModal } = useModal(false);
+  const {
+    formData,
+    setFormData,
+    editId,
+    openForm,
+    handleSubmit,
+    handleDelete,
+  } = useAdminStudentForm();
 
   const openCreateModal = () => {
-    setEditId(null);
-    setFormData({ name: "", course: "",email:"" });
-    setShowModal(true);
+    openForm(null);
+    openModal();
   };
 
   const openEditModal = (student) => {
-    setEditId(student._id);
-    setFormData({
-      name: student.name,
-      course: student.course,
-      email:student.email
-    });
-    setShowModal(true);
+    openForm(student);
+    openModal();
   };
 
-  const filteredStudents = students.filter((student) => {
-    const matchesSearch =
-      student.name.toLowerCase().includes(searchTerm.toLowerCase());
+  if (loading) return <p className="text-center mt-10 text-lg">Loading...</p>;
 
-    const matchesFilter =
-      filterCourse === "All" || student.course === filterCourse;
-
-    return matchesSearch && matchesFilter;
-  });
-
-  const indexOfLastStudent = currentPage * studentsPerPage;
-  const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
-
-  const currentStudents = filteredStudents.slice(
-    indexOfFirstStudent,
-    indexOfLastStudent
-  );
-
-  const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
-
-  const handleSubmit = async () => {
-  if (!formData.name || !formData.email || !formData.course) {
-    alert("All fields are required");
-    return;
-  }
-
-  if (editId) {
-    await dispatch(updateStudent({ id: editId, formData }));
-  } else {
-    await dispatch(createStudent(formData));
-  }
-
-  setShowModal(false);
-};
-
-console.log('students:',students);
-
-  const handleDelete = (id) => {
-    dispatch(deleteStudent(id));
-  };
-
-  if (loading)
-    return <p className="text-center mt-10 text-lg">Loading...</p>;
-
-   {error && (
-  <div className="mb-4 p-3 rounded-lg bg-red-100 border border-red-300 text-red-700 flex items-center justify-between">
-    <span className="text-sm font-medium">
-      {typeof error === "string" ? error : error?.message}
-    </span>
-
-    <button
-      onClick={() => window.location.reload()}
-      className="text-xs bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition"
-    >
-      Retry
-    </button>
-  </div>
-)}
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar />
 
       <div className="pt-24 px-4 py-6 sm:px-8 md:px-16 lg:px-32">
         <div className="w-full mx-auto bg-white p-4 sm:p-6 rounded-xl shadow-md">
-
+          {/* Filters */}
           <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center mb-6">
-
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <input
                 type="text"
@@ -135,7 +70,7 @@ console.log('students:',students);
                 className="border border-gray-300 p-2 rounded-lg w-full sm:w-48"
               >
                 <option value="All">All Courses</option>
-                {[...new Set(students.map((s) => s.course))].map((course, index) => (
+                {courses.map((course, index) => (
                   <option key={index} value={course}>
                     {course}
                   </option>
@@ -151,8 +86,9 @@ console.log('students:',students);
             </button>
           </div>
 
+          {/* Student List */}
           <div className="space-y-4">
-            {currentStudents.map((student) => (
+            {students.map((student) => (
               <div
                 key={student._id}
                 className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center bg-gray-50 p-4 rounded-lg shadow-sm"
@@ -182,6 +118,7 @@ console.log('students:',students);
             ))}
           </div>
 
+          {/* Pagination */}
           <div className="flex flex-wrap justify-center mt-6 gap-2">
             {[...Array(totalPages)].map((_, index) => (
               <button
@@ -199,7 +136,8 @@ console.log('students:',students);
           </div>
         </div>
 
-        {showModal && (
+        {/* Modal */}
+        {isOpen && (
           <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30">
             <div className="bg-white w-full max-w-md mx-4 p-6 rounded-xl shadow-xl">
               <h3 className="text-xl font-semibold mb-4">
@@ -240,14 +178,14 @@ console.log('students:',students);
 
               <div className="flex justify-end gap-2 mt-6">
                 <button
-                  onClick={() => setShowModal(false)}
+                  onClick={closeModal}
                   className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
                 >
                   Cancel
                 </button>
 
                 <button
-                  onClick={handleSubmit}
+                  onClick={() => handleSubmit(closeModal)}
                   className="px-4 py-2 bg-[#913743] text-white rounded-lg hover:bg-[#914a54]"
                 >
                   {editId ? "Update" : "Create"}

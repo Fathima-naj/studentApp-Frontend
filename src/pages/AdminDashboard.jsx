@@ -1,61 +1,31 @@
-import { useEffect, useState } from "react";
-import { axiosInstance } from "../auth/axiosInstance";
+import React from "react";
 import Navbar from "../components/Navbar";
-import { CircleArrowLeft, CircleArrowRight } from 'lucide-react';
-
+import { CircleArrowLeft, CircleArrowRight } from "lucide-react";
+import { useAdminUsers } from "../hooks/useAdminUser";
 
 function AdminDashboard() {
-  const [users, setUsers] = useState([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [search, setSearch] = useState("");
-  const [role, setRole] = useState("");
-  const [sort, setSort] = useState("desc");
-  const [loading, setLoading] = useState(false);
+  const {
+    users,
+    loading,
+    page,
+    setPage,
+    totalPages,
+    search,
+    setSearch,
+    role,
+    setRole,
+    sort,
+    setSort,
+  } = useAdminUsers(5);
 
   const limit = 5;
 
-const fetchUsers = async () => {
-  try {
-    setLoading(true);
-
-    const token = localStorage.getItem("token");
-
-    const res = await axiosInstance.get(`/admin/getUser`, {
-      params: {
-        page,
-        search,
-        role,
-        sort,
-        limit,
-      },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    console.log("API RESPONSE:", res.data);
-
-    setUsers(res.data.users);
-    setTotalPages(res.data.totalPages);   
-
-  } catch (error) {
-    console.log("ERROR RESPONSE:", error.response);
-  } finally {
-    setLoading(false);
-  }
-};
-
-  useEffect(() => {
-    fetchUsers();
-  }, [page, search, role, sort]);
-
-  console.log('users:',users)
   return (
     <div className="p-6 max-w-7xl mx-auto">
-        <Navbar/>
+      <Navbar />
       <h2 className="pt-24 text-2xl text-[#420309] font-bold mb-4">Users List</h2>
 
+      {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-4">
         <input
           type="text"
@@ -91,6 +61,7 @@ const fetchUsers = async () => {
         </select>
       </div>
 
+      {/* Users Table */}
       <div className="overflow-x-auto bg-white shadow rounded-xl">
         <table className="min-w-full text-left">
           <thead className="bg-gray-100 border-b">
@@ -122,9 +93,7 @@ const fetchUsers = async () => {
                   key={user._id}
                   className="border border-gray-100 hover:bg-gray-50 transition"
                 >
-                  <td className="px-4 py-3">
-                    {(page - 1) * limit + index + 1}
-                  </td>
+                  <td className="px-4 py-3">{(page - 1) * limit + index + 1}</td>
                   <td className="px-4 py-3">{user.name}</td>
                   <td className="px-4 py-3">{user.email}</td>
                   <td className="px-4 py-3 capitalize">
@@ -148,13 +117,14 @@ const fetchUsers = async () => {
         </table>
       </div>
 
+      {/* Pagination */}
       <div className="flex justify-between items-center mt-4">
         <button
           disabled={page === 1}
           onClick={() => setPage(page - 1)}
           className="px-4 py-2 text-[#913743] rounded disabled:opacity-50"
         >
-          <CircleArrowLeft/>
+          <CircleArrowLeft />
         </button>
 
         <span className="text-sm text-[#420309]">
@@ -166,7 +136,7 @@ const fetchUsers = async () => {
           onClick={() => setPage(page + 1)}
           className="px-4 py-2 text-[#913743] rounded disabled:opacity-50"
         >
-          <CircleArrowRight/>
+          <CircleArrowRight />
         </button>
       </div>
     </div>
